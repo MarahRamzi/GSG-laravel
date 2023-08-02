@@ -21,6 +21,10 @@
 
         <div class="col-md-9">
 
+            <p>
+                <a href="{{ route('classrooms.classworks.index' , $classroom->id) }}" target="_self" rel="">Classwork</a>
+            </p>
+
         </div>
     </div>
 

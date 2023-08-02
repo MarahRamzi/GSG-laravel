@@ -14,6 +14,11 @@ class Topic extends Model
 
 protected $fillable = ['name'  ,'classroom_id' , 'user_id'];
 
+public function classworks()
+{
+    return $this->hasMany(ClassWork::class , 'topic_id' , 'id');
+}
+
 
 
 }

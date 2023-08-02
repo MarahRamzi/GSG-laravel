@@ -3,8 +3,8 @@
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\JoinClassroomController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopicsController;
-use App\Models\Classroom;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +21,19 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
+
 
 // Route::get('classrooms',[ClassroomController::class , 'index'] )->name('classrooms.index');
 // Route::get('classrooms/create',[ClassroomController::class , 'create'] )->name('classrooms.create');
@@ -49,10 +62,18 @@ Route::get('/classrooms/{classroom}/join' , [JoinClassroomController::class , 'c
 
 Route::post('/classrooms/{classroom}/join' , [JoinClassroomController::class , 'store']);
 
-Route::get('/login' , [LoginController::class , 'create'])->name('login')->middleware('guest');
-Route::post('/login' , [LoginController::class , 'store'])->name('login')->middleware('guest');
+// Route::get('/login' , [LoginController::class , 'create'])->name('login')->middleware('guest');
+// Route::post('/login' , [LoginController::class , 'store'])->name('login')->middleware('guest');
 
 Route::resources([
     'topics'=>TopicsController::class,
     'classrooms' => ClassroomController::class ,
+    // 'classrooms.classworks'=> ClassWorkController::class,
+],[
+    'middleware' => ['auth']
 ]);
+
+Route::resource('classrooms.classworks', ClassWorkController::class)->shallow();
+
+// Route::get('classrooms', [ClassroomController::class , 'index'])->name('classrooms.index')->middleware('auth');
+// Route::get('classrooms/create', [ClassroomController::class , 'create'])->name('classrooms.create')->middleware('auth');

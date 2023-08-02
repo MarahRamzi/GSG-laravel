@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\scopes\UserClassroomScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +46,16 @@ class Classroom extends Model
             $classroom->code = Str::random(7);
             $classroom->user_id = Auth::id();
         });
+    }
+
+    public function classworks() :HasMany
+    {
+        return $this->hasMany(ClassWork::class , 'classroom_id' , 'id');
+    }
+
+    public function topics() : HasMany
+    {
+        return $this->hasMany(Topic::class , 'topic_id' , 'id');
     }
 
     public function join($user_id , $role = 'student')

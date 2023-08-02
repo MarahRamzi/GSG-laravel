@@ -23,11 +23,11 @@ class LoginController extends Controller
             'email'=> $request->email,
             'password' => $request->password ,
         ];
-        
+
        $result = Auth::attempt($credentials , $request->boolean('remember'));
 
        if($result){
-             return redirect(route('classrooms.index'));
+             return redirect()->intended('/');
        }
        return back()->withInput()->withErrors([
             'email' => 'invalid email' ,
