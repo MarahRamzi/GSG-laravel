@@ -27,4 +27,15 @@ class ClassWork extends Model
      {
         return $this->belongsTo(Classwork::class , 'classroom_id' , 'id');
     }
+
+    public function users()
+    {
+        return $this -> belongsToMany(User::class ,
+        'classwork_user' ,
+         'classwork_id' ,
+         'user_id' ,
+         'id' ,
+         'id')
+          -> withTimestamps();
+    }
 }

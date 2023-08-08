@@ -34,10 +34,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-
-// Route::get('classrooms',[ClassroomController::class , 'index'] )->name('classrooms.index');
-// Route::get('classrooms/create',[ClassroomController::class , 'create'] )->name('classrooms.create');
-// Route::post('classrooms',[ClassroomController::class , 'store'] )->name('classrooms.store');
 // Route::get('classrooms/{{classroom}}' , [ClassroomController::class , 'show'])
 // ->name('classrooms.show')
 // ->where( 'classroom' , '\d+');
@@ -61,9 +57,6 @@ Route::get('/classrooms/{classroom}/join' , [JoinClassroomController::class , 'c
 ->name('classrooms.join');
 
 Route::post('/classrooms/{classroom}/join' , [JoinClassroomController::class , 'store']);
-
-// Route::get('/login' , [LoginController::class , 'create'])->name('login')->middleware('guest');
-// Route::post('/login' , [LoginController::class , 'store'])->name('login')->middleware('guest');
 
 Route::resources([
     'topics'=>TopicsController::class,

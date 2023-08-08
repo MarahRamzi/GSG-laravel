@@ -18,7 +18,9 @@ class ClassroomController extends Controller
 {
 
     public function index(Request $request): Renderable{
-        $classroom = Classroom::orderBy('created_at' , 'DESC')->get();
+        $classroom = Classroom::active('active')->orderBy('created_at' , 'DESC')->get();
+        // $classroom = Classroom::active()->orderBy('created_at' , 'DESC')->dd();
+
         // $classroom = DB::table('classrooms')->orderBy('created_at' , 'DESC')->get();
 
         $success = session('success');
@@ -51,8 +53,9 @@ class ClassroomController extends Controller
             $file->move(public_path('storage/covers'), $imageName);
 
             $request = $request->merge([
-                'cover_image_path' => $imageName
-            ]);
+                'cover_image_path' => $imageName,
+                'user_id' => Auth::id(),
+                        ]);
         }
 
 
@@ -158,5 +161,6 @@ class ClassroomController extends Controller
         ->route('classrooms.trashed')
         ->with('success' , "classroom  ({$classroom->name}) deleted forever");
     }
+
 
 }

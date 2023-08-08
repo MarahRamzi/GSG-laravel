@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\scopes\UserClassroomScope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,6 +19,8 @@ class Classroom extends Model
 {
     use HasFactory ,SoftDeletes;
 
+    public static string $disk = 'public' ;
+
     protected $connection = 'mysql';
 
     protected $table = 'classrooms' ;
@@ -31,22 +34,27 @@ class Classroom extends Model
     public $timestamps = true ;
 
     //determine col name that are use with mass asignment in fillable
-    protected $fillable =['name' , 'section' , 'subject' , 'room' , 'cover_image_path' , 'theme' ,'code'];
-
-    public function gtRouteKeyName()
-    {
-        return 'id';
-    }
+    protected $fillable =['name' , 'section' , 'subject' , 'room' , 'cover_image_path' , 'theme' ,'code' , 'user_id'];
 
     protected static function booted()
     {
-        // static::addGlobalScope(new UserClassroomScope);
+        static::addGlobalScope('user' , function(Builder $query)
+        {
+            $query->where('user_id' , Auth::id());
+        });
+
 
         static::creating(function  (Classroom $classroom){
             $classroom->code = Str::random(7);
             $classroom->user_id = Auth::id();
         });
     }
+
+    public function gtRouteKeyName()
+    {
+        return 'id';
+    }
+
 
     public function classworks() :HasMany
     {
@@ -78,15 +86,21 @@ class Classroom extends Model
     public function getCoverImageUrlAttribute($value)
     {
         if($this->cover_image_path){
-            return Storage::disk('public')->url($this->cover_image_path);
+            return Storage::disk(static::$disk)->url($this->cover_image_path);
         }
 
         return 'https://placehold.co/800x300.png';
     }
-
-    public function getUrlAttribute(Classroom $classroom)
+//insted show route
+    public function getUrlAttribute()
     {
-        return route('classrooms.show',$classroom->id);
+        return route('classrooms.show',$this->id);
+    }
+
+
+    public function scopeActive(Builder $query , $status='active')
+    {
+        $query->where('status', '=' , $status );
     }
 
 }

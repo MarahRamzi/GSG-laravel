@@ -24,7 +24,7 @@
           <h5 class="card-title">{{$classrooms->name}}</h5>
           <p class="card-text">{{ $classrooms->section }} - {{ $classrooms->room }}</p>
             <div class="d-flex justify-content-between">
-                <a href="{{ route('classrooms.show' , $classrooms->id) }}" class="btn btn-sm btn-primary">View</a>
+                <a href="{{ $classrooms->url }}" class="btn btn-sm btn-primary">View</a>
                 <a href="{{ route('classrooms.edit' , $classrooms->id) }}" class="btn btn-sm btn-dark">Edit</a>
                 <a href="{{ route('classrooms.trashed' ) }}" class="btn btn-sm btn-warning">Trash</a>
                 <form action="{{ route('classrooms.destroy' , $classrooms->id) }}" method="post">

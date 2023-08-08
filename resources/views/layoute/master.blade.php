@@ -39,12 +39,14 @@
                     <a class="nav-link disabled">Disabled</a>
                   </li>
                 </ul>
-                <div class="mx-3">
-                    {{ Auth::user()->name }}
-                </div>
                 <form class="d-flex" role="search">
                   <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                   <button class="btn btn-outline-success" type="submit">Search</button>
+
+                  <div class="mx-3">
+                    {{ Auth::user()->name }}
+                </div>
+
                 </form>
               </div>
             </div>
