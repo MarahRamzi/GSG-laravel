@@ -7,12 +7,15 @@ use App\Models\Classroom;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL as FacadesURL;
 use Illuminate\Support\str;
 use Illuminate\Validation\Rule;
+use PharIo\Manifest\Url;
 
 class ClassroomController extends Controller
 {
@@ -63,20 +66,22 @@ class ClassroomController extends Controller
 
         // $request->merge(['code' => Str::random(7)]);
 
-        DB::beginTransaction();
-      try{
-        //method 2 mass asignment
-        $classroom = Classroom::create($request->all()); //create=>new classroom() +save()
+       DB::beginTransaction();
 
-       $classroom->join(Auth::id() , 'teacher');
+       try{
 
-        DB::commit();
-    }catch(Exception $e){
+       $classroom = Classroom::create($request->all());
+
+        $classroom->join(Auth::id() , 'teacher');
+
+       DB::commit();
+
+    }catch(QueryException $e){
         DB::rollBack();
-        return back()
-        ->with('error' , $e->getMessage())
-        ->withInput();
+        return back()->with('error' , $e->getMessage())->withInput();
+
     }
+
         // dd($request->all());
 
 
@@ -88,9 +93,15 @@ class ClassroomController extends Controller
 
     public function show(Classroom $classroom){
 
+        $invitationLink = FacadesURL::signedRoute( 'classrooms.join' , [
+            'classroom' => $classroom->id,
+            'code' => $classroom->code,
+        ]);
+
            return View('Classroom.show',compact('classroom'))
             ->with([
                 'classroom' => $classroom,
+                'invitationLink' => $invitationLink,
             ]);
 
     }

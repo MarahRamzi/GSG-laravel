@@ -3,53 +3,51 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classroom;
+use App\Models\Scopes\UserClassroomScope;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Builder\Class_;
 
 class JoinClassroomController extends Controller
 {
     public function create($id)
     {
-        $classroom = Classroom::active()->findOrFail($id);
-
-        try{
-            $this->exists($id , Auth::id());
-        }catch(Exception $e){
-            return redirect()->route('classrooms.show' , $id);
+        $classroom = Classroom::withoutGlobalScope(UserClassroomScope::class)->active('active')->findOrFail($id);
 
 
-        }
+            try
+            {
+                $exists = $this->exists($id , Auth::id());
 
-        return view('Classroom.join' , compact('classroom'));
+            }catch(Exception $e){
+                return redirect()->route('classrooms.show' , $id);
+           }
+
+           return view('Classroom.join' , compact('classroom'));
     }
 
     public function store(Request $request , $id)
     {
 
         $request->validate([
-            'role' => 'in:student,teacher'
+            'rule' => 'in:student,teacher'
         ]);
 
-        $classroom = Classroom::withoutGlobalScope(UserClassroomScope::class)->active()->findOrFail($id);
+        $classroom = Classroom::withoutGlobalScope(UserClassroomScope::class)->active('active')->findOrFail($id);
+        //بدي اتاكد انو عندي كلاس روم بنفس قيمة idالموجودة في url
+        try
+        {
+            $exists = $this->exists($id , Auth::id());
 
-        try{
-            $this->exists($id , Auth::id());
         }catch(Exception $e){
             return redirect()->route('classrooms.show' , $id);
+       }
 
+       $classroom->join( Auth::id() , $request->input('rule' , 'student'));
 
-        }
-
-        DB::table('classroom_user')->insert([ //join
-            'classroom_id' => $classroom->id,
-            'user_id' => Auth::id(),
-            'role' => $request->input('role' , 'student'),
-            'created_at' => now()
-        ]);
-
-        return redirect()->route('classrooms.show' , $id);
+       return redirect(route('classrooms.show' , $id));
     }
 
     protected function exists($classroom_id , $user_id)

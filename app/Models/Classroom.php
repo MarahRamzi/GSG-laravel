@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\scopes\UserClassroomScope;
+use App\Observers\ClassroomObserver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\str;
-
+use PhpParser\Node\Stmt\Static_;
 use Stringable;
 
 class Classroom extends Model
@@ -38,22 +39,33 @@ class Classroom extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope('user' , function(Builder $query)
-        {
-            $query->where('user_id' , Auth::id());
-        });
+        // static::addGlobalScope('user' , function(Builder $query)
+        // {
+        //     $query->where('user_id' , Auth::id());
+        // });
+
+        static::addGlobalScope(new UserClassroomScope());
+        static::observe(ClassroomObserver::class);
 
 
-        static::creating(function  (Classroom $classroom){
-            $classroom->code = Str::random(7);
-            $classroom->user_id = Auth::id();
-        });
+        // static::creating(function  (Classroom $classroom){
+        //     $classroom->code = Str::random(7);
+        //     $classroom->user_id = Auth::id();
+        // });
+
     }
 
     public function gtRouteKeyName()
     {
         return 'id';
     }
+
+    public static function deleteCoverImage($path){
+        if($path && Storage::disk(Classroom::disk)->exists($path)){
+            return  Storage::disk(Classroom::disk)->delete($path);
+        }
+    }
+
 
 
     public function classworks() :HasMany
@@ -66,14 +78,14 @@ class Classroom extends Model
         return $this->hasMany(Topic::class , 'topic_id' , 'id');
     }
 
-    public function join($user_id , $role = 'student')
-    {
-        DB::table('classroom_user')->insert([ //join
+    public function join($user_id , $rule='student'){
+       return DB::table('classroom_user')->insert([
             'classroom_id' => $this->id,
             'user_id' => $user_id,
-            // 'role' => $request->input('role' , 'student'),
-            'created_at' => now()
-        ]);
+            'rule' => $rule,
+            'created_at' => now(),
+           ]);
+
     }
 
 //get(attributeName)Attribute ,,to exists column
@@ -102,5 +114,6 @@ class Classroom extends Model
     {
         $query->where('status', '=' , $status );
     }
+
 
 }

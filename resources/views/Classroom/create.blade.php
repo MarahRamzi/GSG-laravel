@@ -11,6 +11,13 @@
     <div class="container ">
 
     <h1>create classroom</h1>
+
+    @if(session()->has('error'))
+    <div class="alert alert-danger">
+        {{session('error')}}
+    </div>
+    @endif
+
     <form action="{{ route('classrooms.store') }}" method="post" enctype="multipart/form-data">
         {{-- <input type="hidden" name="_token" value="{{ csrf_token() }}">
         {{ csrf_field() }} --}}

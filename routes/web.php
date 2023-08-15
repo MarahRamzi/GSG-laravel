@@ -5,6 +5,7 @@ use App\Http\Controllers\JoinClassroomController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopicsController;
+use App\Models\Classroom;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,29 +45,55 @@ require __DIR__.'/auth.php';
 
 Route::view('master' , 'layoute/master');
 
-Route::get('/classrooms/trashed',[ClassroomController::class , 'Trashed'])->name('classrooms.trashed');
-Route::put('/classrooms/trashed/{classroom}',[ClassroomController::class , 'restore'])->name('classrooms.restore');
-Route::delete('/classrooms/trashed/{classroom}',[ClassroomController::class , 'forceDelete'])->name('classrooms.force-delete');
+Route::middleware(['auth'])->group(function () {
 
 
-Route::get('/topics/trashed',[TopicsController::class , 'Trashed'])->name('topics.trashed');
-Route::put('/topics/trashed/{topic}',[TopicsController::class , 'restore'])->name('topics.restore');
-Route::delete('/topics/trashed/{topic}',[TopicsController::class , 'forceDelete'])->name('topics.force-delete');
+    Route::prefix('/classrooms/trashed')
+    ->controller(ClassroomController::class)
+    ->group(function(){
+        Route::get('/', 'Trashed')->name('classrooms.trashed');
+        Route::put('/{classroom}', 'restore')->name('classrooms.restore');
+        Route::delete('/{classroom}','forceDelete')->name('classrooms.force-delete');
+    });
 
-Route::get('/classrooms/{classroom}/join' , [JoinClassroomController::class , 'create'])
-->name('classrooms.join');
+    Route::prefix('/topics/trashed')
+    ->as('topics.')
+    ->controller(TopicsController::class)
+    ->group(function(){
+        Route::get('/', 'Trashed')->name('topics.trashed');
+        Route::put('/{topic}', 'restore')->name('topics.restore');
+        Route::delete('/{topic}', 'forceDelete')->name('topics.force-delete');
+    });
 
-Route::post('/classrooms/{classroom}/join' , [JoinClassroomController::class , 'store']);
+    Route::get('classrooms/{classroom}/join' , [JoinClassroomController::class , 'create'])->middleware('signed')->name('classrooms.join');
+    Route::post('classrooms/{classroom}/join' , [JoinClassroomController::class , 'store'])->name('classrooms.join.store');
 
-Route::resources([
-    'topics'=>TopicsController::class,
-    'classrooms' => ClassroomController::class ,
-    // 'classrooms.classworks'=> ClassWorkController::class,
-],[
-    'middleware' => ['auth']
-]);
 
-Route::resource('classrooms.classworks', ClassWorkController::class)->shallow();
+    Route::resources([
+        'topics'=>TopicsController::class,
+        'classrooms' => ClassroomController::class ,
+        // 'classrooms.classworks'=> ClassWorkController::class,
+    ]);
+
+    Route::resource('classrooms.classworks', ClassWorkController::class)->shallow();
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Route::get('classrooms', [ClassroomController::class , 'index'])->name('classrooms.index')->middleware('auth');
 // Route::get('classrooms/create', [ClassroomController::class , 'create'])->name('classrooms.create')->middleware('auth');

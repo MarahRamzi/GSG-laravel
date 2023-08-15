@@ -19,6 +19,10 @@
             </div>
         </div>
 
+        <div>
+            <p>Invitation Link : <a href="{{ $invitationLink }}">{{ $invitationLink }}</a></p>
+        </div>
+
         <div class="col-md-9">
 
             <p>
