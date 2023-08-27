@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Models\scopes\UserClassroomScope;
 use App\Observers\ClassroomObserver;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +57,39 @@ class Classroom extends Model
 
     }
 
+    public function classworks() :HasMany
+    {
+        return $this->hasMany(ClassroomWork::class , 'classroom_id' , 'id');
+    }
+
+
+   public function topics() :HasMany
+   {
+    return $this->hasMany(Topic::class , 'classroom_id' , 'id');
+   }
+
+   public function users():BelongsToMany
+   {
+      return $this->belongsToMany(User::class , 'classroom_user' ,'classroom_id' , 'user_id' , 'id' , 'id' )
+      ->withPivot(['rule']);
+                        // (model , pivot table , fk in pivot table , pk related to fk)
+   }
+
+   public function teachers()
+   {
+     return $this->users()->where('rule' , '=' , 'teacher');
+   }
+
+   public function students()
+   {
+     return  $this->users()->where('rule' , '=' , 'student');
+   }
+
+   public function posts()
+   {
+        return $this->hasMany(Post::class);
+   }
+
     public function gtRouteKeyName()
     {
         return 'id';
@@ -67,24 +102,25 @@ class Classroom extends Model
     }
 
 
-
-    public function classworks() :HasMany
-    {
-        return $this->hasMany(ClassWork::class , 'classroom_id' , 'id');
-    }
-
-    public function topics() : HasMany
-    {
-        return $this->hasMany(Topic::class , 'topic_id' , 'id');
-    }
-
     public function join($user_id , $rule='student'){
-       return DB::table('classroom_user')->insert([
-            'classroom_id' => $this->id,
-            'user_id' => $user_id,
+
+            $exists = $this->users()->wherePivot('user_id' , '=' , $user_id)->exists();
+
+        if($exists){
+            throw new Exception('user already joined the classroom');
+
+    }
+        return $this->users()->attach($user_id , [
             'rule' => $rule,
             'created_at' => now(),
-           ]);
+        ]);
+    //    return DB::table('classroom_user')->insert([
+    //         'classroom_id' => $this->id,
+    //         'user_id' => $user_id,
+    //         'rule' => $rule,
+    //         'created_at' => now(),
+    //        ]);
+
 
     }
 

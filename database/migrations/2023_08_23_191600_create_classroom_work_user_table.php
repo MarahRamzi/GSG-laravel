@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('classwork_user', function (Blueprint $table) {
-
-            $table->foreignId('classwork_id')
+        Schema::create('classroom_work_user', function (Blueprint $table) {
+            $table->foreignId('classroom_work_id')
             ->constrained()->cascadeOnDelete();
 
             $table->foreignId('user_id')
@@ -23,11 +22,9 @@ return new class extends Migration
             $table->timestamp('submited_at')->nullable();
             $table->enum('status' , ['assigned' , 'draft' , 'submited' , 'return'])
             ->default('assigned');
-            
+
             $table->timestamp('created_at')->nullable();
-
-            $table->primary(['classwork_id' , 'user_id']);
-
+            $table->primary(['classroom_work_id' , 'user_id']);
         });
     }
 
@@ -36,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('classwork_user');
+        Schema::dropIfExists('classroom_work_user');
     }
 };

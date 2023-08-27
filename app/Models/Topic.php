@@ -20,6 +20,7 @@ protected static function booted()
     static::addGlobalScope(new UserClassroomScope);
 }
 
+
 public function classworks()
 {
     return $this->hasMany(ClassWork::class , 'topic_id' , 'id');

@@ -26,7 +26,7 @@
           <div class="d-flex justify-content-between">
           <a href="{{ route('topics.show' , $topics->id) }}" class="btn btn-sm btn-primary">View</a>
           <a href="{{ route('topics.edit' , $topics->id) }}" class="btn btn-sm btn-dark">Edit</a>
-          <a href="{{ route('topics.trashed') }}" class="btn btn-sm btn-warning">Trash</a>
+          {{-- <a href="{{ route('topics.trashed') }}" class="btn btn-sm btn-warning">Trash</a> --}}
           <form action="{{ route('topics.destroy' , $topics->id) }}" method="post">
             @csrf
             @method('delete')

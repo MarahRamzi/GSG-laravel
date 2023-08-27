@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('classworks', function (Blueprint $table) {
+        Schema::create('classroom_works', function (Blueprint $table) {
             $table->id();
             $table->foreignId('classroom_id')
             ->constrained()
             ->cascadeOnDelete();
-
+ 
             $table->foreignId('user_id')
             ->nullable()
             ->constrained()
@@ -28,7 +28,7 @@ return new class extends Migration
             ->nullOnDelete();
 
             $table->string('title');
-            $table->text('descreption')->nullable();//text => 4000char , longText =>4G char
+            $table->longText('descreption')->nullable();//text => 4000char , longText =>4G char
             $table->enum('type' , ['assignment' , 'material' ,'question']);
             $table->enum('status' , ['published' , 'draft'])->default('published');
             $table->timestamp('published_at')->nullable();
@@ -42,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('classworks');
+        Schema::dropIfExists('classroom_works');
     }
 };

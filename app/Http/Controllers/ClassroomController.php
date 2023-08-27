@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClassroomRequest;
 use App\Models\Classroom;
+use App\Models\Post;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Contracts\View\View;
@@ -93,12 +94,13 @@ class ClassroomController extends Controller
 
     public function show(Classroom $classroom){
 
+        $posts = Post::withCount('comments')->get();
         $invitationLink = FacadesURL::signedRoute( 'classrooms.join' , [
             'classroom' => $classroom->id,
             'code' => $classroom->code,
         ]);
 
-           return View('Classroom.show',compact('classroom'))
+           return View('Classroom.show',compact('classroom' , 'posts'))
             ->with([
                 'classroom' => $classroom,
                 'invitationLink' => $invitationLink,

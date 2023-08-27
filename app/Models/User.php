@@ -8,6 +8,7 @@ use App\Models\scopes\UserClassroomScope;
 use App\scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable; #alias
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -61,4 +62,19 @@ class User extends Authenticatable
             set: fn ($value) => strtolower($value)
         );
     }
+
+    public function classroomWorks()
+    {
+        return $this->belongsToMany(ClassroomWork::class)
+        ->using(ClassworkUser::class)
+        ->withPivot('grade' , 'status' , 'submited_at' , 'created_at');
+    }
+
+    public function comments():HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+
+
 }

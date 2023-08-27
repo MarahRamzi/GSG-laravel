@@ -1,11 +1,18 @@
 <?php
 
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\ClassroomPeople;
+use App\Http\Controllers\ClassroomPeopleController;
+use App\Http\Controllers\ClassroomWorkController;
+use App\Http\Controllers\ClassWorkController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JoinClassroomController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopicsController;
 use App\Models\Classroom;
+use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -67,19 +74,25 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('classrooms/{classroom}/join' , [JoinClassroomController::class , 'create'])->middleware('signed')->name('classrooms.join');
     Route::post('classrooms/{classroom}/join' , [JoinClassroomController::class , 'store'])->name('classrooms.join.store');
-
+ 
 
     Route::resources([
         'topics'=>TopicsController::class,
         'classrooms' => ClassroomController::class ,
-        // 'classrooms.classworks'=> ClassWorkController::class,
+        'classrooms.classworks'=> ClassroomWorkController::class,
+        'classrooms.posts' => PostController::class,
     ]);
 
-    Route::resource('classrooms.classworks', ClassWorkController::class)->shallow();
+    // Route::resource('classrooms.classworks', ClassWorkController::class)->shallow();
 
 
 
+  //Route::get('classroom/{classroom}/people' , ClassroomPeopleController::class); //call to invoke magic method
 
+    Route::get('classrooms/{classroom}/people' , [ClassroomPeopleController::class , 'index'])->name('classrooms.people');
+    Route::delete('classrooms/{classroom}/people' , [ClassroomPeopleController::class , 'destroy'])->name('classrooms.people.destroy');
+
+    Route::post('comments' , [CommentController::class , 'store'])->name('comments.store');
 });
 
 

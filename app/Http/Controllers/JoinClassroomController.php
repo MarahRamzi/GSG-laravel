@@ -14,12 +14,13 @@ class JoinClassroomController extends Controller
 {
     public function create($id)
     {
-        $classroom = Classroom::withoutGlobalScope(UserClassroomScope::class)->active('active')->findOrFail($id);
+        $classroom = Classroom::withoutGlobalScope(UserClassroomScope::class)
+        ->active('active')->findOrFail($id);
 
 
             try
             {
-                $exists = $this->exists($id , Auth::id());
+                $exists = $this->exists($classroom , Auth::id());
 
             }catch(Exception $e){
                 return redirect()->route('classrooms.show' , $id);
@@ -35,27 +36,23 @@ class JoinClassroomController extends Controller
             'rule' => 'in:student,teacher'
         ]);
 
-        $classroom = Classroom::withoutGlobalScope(UserClassroomScope::class)->active('active')->findOrFail($id);
+        $classroom = Classroom::withoutGlobalScope(UserClassroomScope::class)
+        ->active('active')->findOrFail($id);
         //بدي اتاكد انو عندي كلاس روم بنفس قيمة idالموجودة في url
         try
         {
-            $exists = $this->exists($id , Auth::id());
+            $classroom->join( Auth::id() , $request->input('rule' , 'student'));
 
         }catch(Exception $e){
             return redirect()->route('classrooms.show' , $id);
        }
 
-       $classroom->join( Auth::id() , $request->input('rule' , 'student'));
-
        return redirect(route('classrooms.show' , $id));
     }
 
-    protected function exists($classroom_id , $user_id)
+    protected function exists(Classroom $classroom , $user_id)
     {
-        $exists = DB::table('classroom_user')
-        ->where('classroom_id' , $classroom_id)
-        ->where('user_id' , $user_id)
-        ->exists();
+        $exists = $classroom->users()->wherePivot('user_id' , '=' , $user_id)->exists();
 
         if($exists){
             throw new Exception('user already joined the classroom');

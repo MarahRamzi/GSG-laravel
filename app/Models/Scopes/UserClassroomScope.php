@@ -22,7 +22,7 @@ class UserClassroomScope implements Scope
                     ->orWhereExists(function( QueryBuilder $query) use($id){
                     $query->select(DB::raw('1'))
                     ->from('classroom_user')
-                    ->whereColumn('classroom_id' , '=' , 'classrooms.id')
+                    // ->whereColumn('classroom_id' , '=' , 'classrooms.id')
                     ->where('user_id' , '=' , $id);
                 });
 

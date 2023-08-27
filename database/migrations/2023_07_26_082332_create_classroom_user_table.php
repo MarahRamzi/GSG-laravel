@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
- 
+
 return new class extends Migration
 {
     /**
@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('classroom_user', function (Blueprint $table) {
             $table->foreignId('classroom_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('rule' , ['student' , ' teacher'])->default('student');
+            $table->enum('rule' ,['student' , ' teacher'])->default('student');
             $table->timestamp('created_at');
             $table->primary(['classroom_id' , 'user_id']);
         });
