@@ -17,7 +17,7 @@
 
 <div class="container">
         {{-- <h1> classroom </h1> --}}
-        <h1>{{ $classroom->name }} (#{{ $classroom->id }}) detailed</h1>
+        <h1>{{ $classroom->name }} (#{{ $classroom->id }}) {{ __('detailed') }}</h1>
         {{-- <h3>{{ $classroom->section }}</h3>--}}
 </div>
 
@@ -30,14 +30,14 @@
             </div>
 
             <div  class="mt-3">
-                <p >Invitation Link : 
+                <p >{{ __('Invitation Link ') }}:
                     <a  style="width: 15rem;" href="{{ $invitationLink }}">{{ $invitationLink }}</a>
                 </p>
             </div>
 
             <div class="mt-3">
                 <p>
-                    <a href="{{ route('classrooms.classworks.index' , $classroom->id) }}" target="_self" rel="" class="btn btn-outline-dark">Classworks</a>
+                    <a href="{{ route('classrooms.classworks.index' , $classroom->id) }}" target="_self" rel="" class="btn btn-outline-dark">{{ __('Classworks') }}</a>
                 </p>
             </div>
 

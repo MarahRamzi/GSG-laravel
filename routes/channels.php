@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+// App.Models.User.{id} => default channel for broadcast notifications (can change it)
+// {id} => each user have different channel
+
+Broadcast::channel('classroom.{id}', function($user , $id){
+    $user->classrooms()->where('id' , '=' , $id)->exists();
+});

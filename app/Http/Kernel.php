@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\ApplyUserPreferences;
+use App\Http\Middleware\MarkNotificationAsRead;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -33,15 +35,18 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class, //validation (error msg store in session)
             \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class, //Route model pinding
+            \App\Http\Middleware\ApplyUserPreferences::class ,
+            \App\Http\Middleware\MarkNotificationAsRead::class,
         ],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api', // لا يتم استدعاء api اكتر من مرة في فترة زمنية محددة
+            \Illuminate\Routing\Middleware\SubstituteBindings::class, //Route model pinding
+            \App\Http\Middleware\CheckApiKey::class,
         ],
     ];
 
@@ -64,5 +69,7 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-    ];
+        // 'user.preferences' => ApplyUserPreferences::class,
+        'subscribed' => \App\Http\Middleware\EnsureUserHasActiveSubscription::class
+        ];
 }

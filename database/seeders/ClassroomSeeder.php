@@ -14,11 +14,20 @@ class ClassroomSeeder extends Seeder
     public function run(): void
     {
         DB::table('classrooms')->insert([
-            'name' => 'TT9-laravel',
-            'code' => 'laravel9',
-            'section' => 'LARAVEL',
-            'subject' => 'php',
-            'room' => 'quads' ,
+            'name' => 'Android',
+            'code' => 'WERDSAA',
+            'section' => 'Android',
+            'subject' => 'java',
+            'room' => 'tornto' ,
+            'user_id' => '1',
+        ]);
+
+        DB::table('classrooms')->insert([
+            'name' => 'Flutter',
+            'code' => 'WERDYIUA',
+            'section' => 'flutter',
+            'subject' => 'flutter subject',
+            'room' => 'quds' ,
             'user_id' => '1',
         ]);
     }

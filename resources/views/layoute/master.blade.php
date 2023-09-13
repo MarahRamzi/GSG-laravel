@@ -1,10 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html dir="{{ App::isLocale('ar') ? 'rtl' : 'ltr' }}" lang="{{ App::currentlocale() }}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> @yield('title' , config('app.name'))</title>
+    @if(App::currentlocale()== 'ar')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.rtl.min.css" integrity="sha384-PRrgQVJ8NNHGieOA1grGdCTIt4h21CzJs6SnWH4YMQ6G5F5+IEzOHz67L4SQaF0o" crossorigin="anonymous">
+    @else
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    @endif
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous"> --}}
     @stack('styles')
   </head>
@@ -39,6 +43,32 @@
                   <li class="nav-item">
                     <a class="nav-link disabled">Disabled</a>
                   </li>
+
+                   <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+
+                  </li>
+
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Notifications <span  @class(['text-light', 'badge bg-primary bg-gradient' => Auth::user()->unreadNotifications()->count() != 0 ])>{{ Auth::user()->unreadNotifications()->count() }}</span>
+                        <i class="fa-duotone fa-envelope"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {{-- Auth::user()->notifications (all notifications)--}}
+                        @foreach (Auth::user()->notifications()->take(5)->get() as $notification)
+                            <li><a @class(['dropdown-item', 'bg-primary bg-gradient' => $notification->unread()]) href="{{ $notification->data['link'] }}?nid={{$notification->id}}">
+                                    {{ $notification->data['body']}}
+                                    <br>
+                                    <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                        @endforeach
+
+                    </ul>
+                  </li>
+
+
                 </ul>
                 <form class="d-flex" role="search">
                   <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -77,6 +107,14 @@
     </ul>
   </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+<script>
+    var classroomId ;
+    const userId = "{{ Auth::id() }}";
+</script>
+
 @stack('scripts')
+@vite(['resources/js/app.js'])
+
 </body>
 </html>

@@ -12,9 +12,16 @@ class ClassworkUser extends Pivot
 
   protected $table = "classroom_work_user";
 
+// Skip updated column
+  public function getUpdatedAtColumn()
+  {
+
+  }
     public function setUpdatedAt($value)
     {
         // $this->{$this->getUpdatedAtColumn()} = $value; //كدا وقفت وضع قيمة لل value
         return $this;
     }
+
+
 }

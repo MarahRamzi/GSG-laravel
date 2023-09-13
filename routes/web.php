@@ -8,8 +8,12 @@ use App\Http\Controllers\ClassWorkController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JoinClassroomController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PaymentsController;
+use App\Http\Controllers\PlansController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\SubscriptionsController;
 use App\Http\Controllers\TopicsController;
 use App\Models\Classroom;
 use App\Models\Post;
@@ -38,9 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+}); 
 
-require __DIR__.'/auth.php';
+// require __DIR__.'/auth.php';
 
 // Route::get('classrooms/{{classroom}}' , [ClassroomController::class , 'show'])
 // ->name('classrooms.show')
@@ -53,6 +57,18 @@ require __DIR__.'/auth.php';
 Route::view('master' , 'layoute/master');
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::post('subscriptions' , [SubscriptionsController::class , 'store'])
+    ->name('subscriptions.store');
+
+    Route::post('payments' , [PaymentsController::class , 'store'])->name('payments.store');
+
+    Route::get('payments/success' , [PaymentsController::class , 'success'])->name('payments.success');
+
+    Route::get('payments/cancel' , [PaymentsController::class , 'cancel'])->name('payments.cancel');
+    
+    Route::get('subscriptions/{subscription}/checkout' , [PaymentsController::class , 'create'])->name('checkout');
+    
 
 
     Route::prefix('/classrooms/trashed')
@@ -74,7 +90,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('classrooms/{classroom}/join' , [JoinClassroomController::class , 'create'])->middleware('signed')->name('classrooms.join');
     Route::post('classrooms/{classroom}/join' , [JoinClassroomController::class , 'store'])->name('classrooms.join.store');
- 
+
 
     Route::resources([
         'topics'=>TopicsController::class,
@@ -93,7 +109,15 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('classrooms/{classroom}/people' , [ClassroomPeopleController::class , 'destroy'])->name('classrooms.people.destroy');
 
     Route::post('comments' , [CommentController::class , 'store'])->name('comments.store');
+
+    Route::post('classworks/{classwork}/submissions/' , [SubmissionController::class , 'store'])->name('submissions.store');
+
+    Route::get('submissions/{submission}/file/' , [SubmissionController::class , 'file'])->name('submissions.file');
+
 });
+
+Route::get('plans' , [PlansController::class , 'index'])
+->name('plans');
 
 
 

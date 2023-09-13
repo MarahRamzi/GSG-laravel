@@ -39,6 +39,17 @@ class Classroom extends Model
     //determine col name that are use with mass asignment in fillable
     protected $fillable =['name' , 'section' , 'subject' , 'room' , 'cover_image_path' , 'theme' ,'code' , 'user_id'];
 
+
+    protected $appends= [
+        'cover_image_url' ,
+
+    ];
+
+    protected $hidden =[
+        'cover_image_path',
+        'deleted_at'
+    ];
+
     protected static function booted()
     {
         // static::addGlobalScope('user' , function(Builder $query)
@@ -57,9 +68,19 @@ class Classroom extends Model
 
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function classworks() :HasMany
     {
         return $this->hasMany(ClassroomWork::class , 'classroom_id' , 'id');
+    }
+
+    public function streams() :HasMany
+    {
+        return $this->hasMany(Stream::class );
     }
 
 
@@ -150,6 +171,7 @@ class Classroom extends Model
     {
         $query->where('status', '=' , $status );
     }
+
 
 
 }

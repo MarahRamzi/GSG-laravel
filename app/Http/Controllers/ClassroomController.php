@@ -21,22 +21,32 @@ use PharIo\Manifest\Url;
 class ClassroomController extends Controller
 {
 
-    public function index(Request $request): Renderable{
-        $classroom = Classroom::active('active')->orderBy('created_at' , 'DESC')->get();
+    public function __construct()
+    {
+        // $this->middleware('subscribed')->only('create' , 'store');
+    }
+    
+
+    public function index(Request $request): Renderable
+    {
+        // dd(Auth::user()->notifications);
+        $classroom = Classroom::active('active')->orderBy('created_at', 'DESC')->get();
         // $classroom = Classroom::active()->orderBy('created_at' , 'DESC')->dd();
 
         // $classroom = DB::table('classrooms')->orderBy('created_at' , 'DESC')->get();
 
         $success = session('success');
-        return view('Classroom.index' ,compact('classroom' , 'success'));
+        return view('Classroom.index', compact('classroom', 'success'));
     }
 
     public function create()
     {
+
         return view()->make('Classroom.create');
     }
 
-    public function store(ClassroomRequest $request) : RedirectResponse{
+    public function store(ClassroomRequest $request): RedirectResponse
+    {
         //method 1
         //$classroom = new Classroom();
         // $classroom->name = $request->post('name'); //to all column
@@ -59,7 +69,7 @@ class ClassroomController extends Controller
             $request = $request->merge([
                 'cover_image_path' => $imageName,
                 'user_id' => Auth::id(),
-                        ]);
+            ]);
         }
 
 
@@ -67,53 +77,53 @@ class ClassroomController extends Controller
 
         // $request->merge(['code' => Str::random(7)]);
 
-       DB::beginTransaction();
+        DB::beginTransaction();
 
-       try{
+        try {
 
-       $classroom = Classroom::create($request->all());
+            $classroom = Classroom::create($request->all());
 
-        $classroom->join(Auth::id() , 'teacher');
+            $classroom->join(Auth::id(), 'teacher');
 
-       DB::commit();
-
-    }catch(QueryException $e){
-        DB::rollBack();
-        return back()->with('error' , $e->getMessage())->withInput();
-
-    }
+            DB::commit();
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage())->withInput();
+        }
 
         // dd($request->all());
 
 
         //PRG
         return redirect(route('classrooms.index'))
-        ->with('success' , 'classroom created');
-
+            ->with('success', __('classroom created'));
     }
 
-    public function show(Classroom $classroom){
+    public function show(Classroom $classroom)
+    {
+
 
         $posts = Post::withCount('comments')->get();
-        $invitationLink = FacadesURL::signedRoute( 'classrooms.join' , [
+        $invitationLink = FacadesURL::signedRoute('classrooms.join', [
             'classroom' => $classroom->id,
             'code' => $classroom->code,
         ]);
 
-           return View('Classroom.show',compact('classroom' , 'posts'))
+        return View('Classroom.show', compact('classroom', 'posts'))
             ->with([
                 'classroom' => $classroom,
                 'invitationLink' => $invitationLink,
             ]);
-
     }
 
-    public function edit(Classroom $classroom){
-        return view('Classroom.edit' , compact('classroom'));
+    public function edit(Classroom $classroom)
+    {
 
+
+        return view('Classroom.edit', compact('classroom'));
     }
 
-    public function update(ClassroomRequest $request , Classroom $classroom)
+    public function update(ClassroomRequest $request, Classroom $classroom)
     {
 
 
@@ -128,52 +138,53 @@ class ClassroomController extends Controller
         // }
 
         // $old= $classroom->cover_image_path;
+
         $validated = $request->validated(); //Returns the data it has validation
 
-         $classroom->update($validated);
+        $classroom->update($validated);
 
         // if($old && $old != $classroom->cover_image_path){
         //     Classroom::deleteCoverImage($old);
         // }
 
         return redirect(route('classrooms.index'))
-        ->with('success' , 'classroom updated');
-     }
+            ->with('success', __('classroom updated'));
+    }
 
 
-    public function destroy(Classroom $classroom){
+    public function destroy(Classroom $classroom)
+    {
 
         $classroom->delete();
 
         return redirect(route('classrooms.index'))
-        ->with('success' , 'classroom deleted');
-
+            ->with('success', __('classroom deleted'));
     }
 
-    public function Trashed(){
+    public function Trashed()
+    {
         $classroom = Classroom::onlyTrashed()->latest('deleted_at')->get();
 
-        return view('Classroom.trashed' ,compact('classroom'));
+        return view('Classroom.trashed', compact('classroom'));
     }
 
-    public function restore($id) {
+    public function restore($id)
+    {
         $classroom = Classroom::onlyTrashed()->findOrFail($id);
         $classroom->restore();
 
         return redirect()
-        ->route('classrooms.index')
-        ->with('success' , "classroom  ({$classroom->name}) restored");
-
+            ->route('classrooms.index')
+            ->with('success', "classroom  ({$classroom->name}) restored");
     }
 
-    public function  forceDelete($id){
-            $classroom = Classroom::onlyTrashed()->findOrFail($id);
-            $classroom->forceDelete();
+    public function  forceDelete($id)
+    {
+        $classroom = Classroom::onlyTrashed()->findOrFail($id);
+        $classroom->forceDelete();
 
-            return redirect()
-        ->route('classrooms.trashed')
-        ->with('success' , "classroom  ({$classroom->name}) deleted forever");
+        return redirect()
+            ->route('classrooms.trashed')
+            ->with('success', "classroom  ({$classroom->name}) deleted forever");
     }
-
-
 }

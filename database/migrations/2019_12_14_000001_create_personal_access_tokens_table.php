@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
-            $table->morphs('tokenable');
-            $table->string('name');
+            $table->morphs('tokenable'); // allow any type of user to authenticate
+            $table->string('name'); //store device name
             $table->string('token', 64)->unique();
-            $table->text('abilities')->nullable();
-            $table->timestamp('last_used_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->text('abilities')->nullable(); // abilities of token (when use third party) provide authentication system to outside application
+            $table->timestamp('last_used_at')->nullable(); // last use of token 
+            $table->timestamp('expires_at')->nullable(); // time of end token
             $table->timestamps();
         });
     }
