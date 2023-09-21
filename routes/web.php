@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\TwoFactorAuthenticationController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\ClassroomPeople;
 use App\Http\Controllers\ClassroomPeopleController;
@@ -42,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-}); 
+});
 
 // require __DIR__.'/auth.php';
 
@@ -56,6 +57,8 @@ Route::middleware('auth')->group(function () {
 
 Route::view('master' , 'layoute/master');
 
+Route::get('/admin/2fa' , [TwoFactorAuthenticationController::class , 'create' ]);
+
 Route::middleware(['auth'])->group(function () {
 
     Route::post('subscriptions' , [SubscriptionsController::class , 'store'])
@@ -66,9 +69,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('payments/success' , [PaymentsController::class , 'success'])->name('payments.success');
 
     Route::get('payments/cancel' , [PaymentsController::class , 'cancel'])->name('payments.cancel');
-    
+
     Route::get('subscriptions/{subscription}/checkout' , [PaymentsController::class , 'create'])->name('checkout');
-    
+
 
 
     Route::prefix('/classrooms/trashed')

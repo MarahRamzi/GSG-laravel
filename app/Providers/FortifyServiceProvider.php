@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
+use Illuminate\Support\Facades\Config;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -20,7 +21,16 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if(request()->is('admin' , 'admin/*')){
+            Config::set([ //change value in fortify config
+
+                'fortify.guard' => 'admin',
+                'fortify.prefix' => 'admin',
+                'fortify.username' => 'username', //login using username
+                'fortify.passwords' => 'admins'
+            ]);
+
+        }
     }
 
     /**
@@ -28,10 +38,18 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+
+        // Fortify::loginView('auth.login');
+        // Fortify::registerView('auth.register');
+
+        Fortify::viewPrefix('auth.');
+
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());

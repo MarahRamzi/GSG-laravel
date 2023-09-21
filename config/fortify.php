@@ -89,7 +89,7 @@ return [
 
     'prefix' => '',
 
-    'domain' => null,
+    'domain' => '',
 
     /*
     |--------------------------------------------------------------------------
@@ -116,8 +116,9 @@ return [
     */
 
     'limiters' => [
-        'login' => 'login',
-        'two-factor' => 'two-factor',
+        'login' => 'login', //RateLimiter key (define in fortify service provider)
+        'two-factor' => 'two-factor', //  RateLimiter key (define in fortify service provider)
+        // key static => value dynamic
     ],
 
     /*
@@ -131,8 +132,8 @@ return [
     |
     */
 
-    'views' => true,
-
+    'views' => true, //support views 
+ 
     /*
     |--------------------------------------------------------------------------
     | Features
